@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1001444140062",
+    "firebase_url": "https://locationbasedcampaign.firebaseio.com",
+    "project_id": "locationbasedcampaign",
+    "storage_bucket": "locationbasedcampaign.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001444140062:android:7d921a59f42524643afa0f",
+        "android_client_info": {
+          "package_name": "com.example.locationbasedcampaign"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1001444140062-rgfbu038tsmlemhuspoi3dn7l06kfcug.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANo0oGzLXuiaUcV3hPbByWTi3ehj8G9E4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1001444140062-rgfbu038tsmlemhuspoi3dn7l06kfcug.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
