@@ -50,7 +50,7 @@ public class AdminPanelActivity extends AppCompatActivity {
         });
     }
 
-    public void addStore(String name, LatLng coordinates, String campaign){
+    public static void addStore(String name, LatLng coordinates, String campaign){
         Store u = new Store(name, coordinates, campaign);
         storeList.add(u);
     }
