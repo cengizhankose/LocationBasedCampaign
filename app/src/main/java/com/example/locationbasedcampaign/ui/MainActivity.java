@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,15 +23,21 @@ import android.widget.Toast;
 import com.example.locationbasedcampaign.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.maps.android.SphericalUtil;
 
+import static com.example.locationbasedcampaign.AdminPanelActivity.addStore;
 import static com.example.locationbasedcampaign.Constants.ERROR_DIALOG_REQUEST;
 import static com.example.locationbasedcampaign.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.example.locationbasedcampaign.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
-
 import static com.example.locationbasedcampaign.GlobalVariables.storeList;
 import static com.example.locationbasedcampaign.GlobalVariables.chosenDistance;
 import static com.example.locationbasedcampaign.GlobalVariables.category;
+import static com.example.locationbasedcampaign.GlobalVariables.userList;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -39,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     TextView categoryTxt,distanceTxt;
     String[] categorieArray,distanceArray;
     boolean mLocationPermissionGranted=false;
+    public LatLng userLocation;
+    private FusedLocationProviderClient mFusedLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,15 +56,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         createElements();
+        mFusedLocationClient= LocationServices.getFusedLocationProviderClient(this);
 
         mapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (int i = 0;i<storeList.size();i++){
-                    double d;
-                    d = SphericalUtil.computeDistanceBetween("Kullanıcının koordinatları gelmeli",storeList.get(i).getStoreCoordinates());
-                    storeList.get(i).setStoreDistanceWithUser(d);
-                }
+                addExistingStores();
+                getLastKnownLocation();
                 openMapsActivity();
             }
         });
@@ -88,9 +96,9 @@ public class MainActivity extends AppCompatActivity {
         distanceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                distanceArray = new String[]{"100", "200", "400", "800", "1000"};
+                distanceArray = new String[]{"1", "2", "4", "8", "10"};
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-                mBuilder.setTitle("Seciminizi Yapiniz (m)");
+                mBuilder.setTitle("Seciminizi Yapiniz (km)");
                 mBuilder.setIcon(R.drawable.icon);
                 mBuilder.setSingleChoiceItems(distanceArray, -1, new DialogInterface.OnClickListener() {
                     @Override
@@ -111,6 +119,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    public void getLastKnownLocation(){
+        mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if (task.isSuccessful()){
+                    Location location = task.getResult();
+                    userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                    calculateDistanceBetweenStores(userLocation);
+                }
+            }
+        });
+    }
+
+    public void calculateDistanceBetweenStores(LatLng location) {
+        for (int i = 0;i<storeList.size();i++){
+            double d = 0;
+            d = (SphericalUtil.computeDistanceBetween(location,storeList.get(i).getStoreCoordinates())/1000);
+            storeList.get(i).setStoreDistanceWithUser(d);
+        }
+    }
+
+
+
+
+    public void addExistingStores(){
+        String storeNames[] = {"Kardiyum AVM", "Sancakpark AVM", "Sancaktepe Osmanlı Çarşı"};
+        LatLng storeCoordinates[] = {new LatLng(41.031935, 29.227113),new LatLng(41.010334, 29.210970),new LatLng(41.007910, 29.243073)};
+        String storeCampaigns[] = {"Bir bilet alana ikinci yarı fiyatına","Bir bilet alana ikinci bedava","Bir bilet alana ikinci iki katına"};
+        for(int i = 0; i<storeNames.length;i++){
+            addStore(storeNames[i],storeCoordinates[i],storeCampaigns[i]);
+        }
+    }
+
 
     private void openMapsActivity() {
         Intent i = new Intent(this, MapsActivity.class);
@@ -160,7 +203,6 @@ public class MainActivity extends AppCompatActivity {
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-            //getChatrooms();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -212,7 +254,6 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(mLocationPermissionGranted){
-                    //getChatrooms();
                 }
                 else{
                     getLocationPermission();
