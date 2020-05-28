@@ -36,8 +36,8 @@ import static com.example.locationbasedcampaign.Constants.PERMISSIONS_REQUEST_AC
 import static com.example.locationbasedcampaign.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 import static com.example.locationbasedcampaign.GlobalVariables.storeList;
 import static com.example.locationbasedcampaign.GlobalVariables.chosenDistance;
+import static com.example.locationbasedcampaign.GlobalVariables.chosenCategorie;
 import static com.example.locationbasedcampaign.GlobalVariables.category;
-import static com.example.locationbasedcampaign.GlobalVariables.userList;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addExistingStores();
+                Log.d(TAG, "onClick: kategoriler - "+storeList.get(1).getStoreCategories());
                 getLastKnownLocation();
                 openMapsActivity();
             }
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         categoryTxt.setText(categorieArray[which]);
-                        category = categorieArray[which];
+                        chosenCategorie = categorieArray[which];
                         dialog.dismiss();
                     }
                 });
@@ -144,13 +145,18 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
     public void addExistingStores(){
         String storeNames[] = {"Kardiyum AVM", "Sancakpark AVM", "Sancaktepe Osmanlı Çarşı"};
         LatLng storeCoordinates[] = {new LatLng(41.031935, 29.227113),new LatLng(41.010334, 29.210970),new LatLng(41.007910, 29.243073)};
         String storeCampaigns[] = {"Bir bilet alana ikinci yarı fiyatına","Bir bilet alana ikinci bedava","Bir bilet alana ikinci iki katına"};
+        String storeCategories[][] = {{"Korku","Aksiyon","Macera"},{"Aksiyon","Macera","Animasyon"},{"Animasyon","Çocuk","Komedi"}};
         for(int i = 0; i<storeNames.length;i++){
             addStore(storeNames[i],storeCoordinates[i],storeCampaigns[i]);
+        }
+        for (int i = 0; i<storeNames.length;i++){
+            for (int j = 0; j<storeCategories[i].length;j++){
+                storeList.get(i).addStoreCategorie(storeCategories[i][j]);
+            }
         }
     }
 
