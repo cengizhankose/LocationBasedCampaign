@@ -20,13 +20,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.locationbasedcampaign.R;
-import com.example.locationbasedcampaign.RegisterActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.maps.android.SphericalUtil;
 
 import static com.example.locationbasedcampaign.Constants.ERROR_DIALOG_REQUEST;
 import static com.example.locationbasedcampaign.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.example.locationbasedcampaign.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
+
+import static com.example.locationbasedcampaign.GlobalVariables.storeList;
+import static com.example.locationbasedcampaign.GlobalVariables.chosenDistance;
+import static com.example.locationbasedcampaign.GlobalVariables.category;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -46,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
         mapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                for (int i = 0;i<storeList.size();i++){
+                    double d;
+                    d = SphericalUtil.computeDistanceBetween("Kullanıcının koordinatları gelmeli",storeList.get(i).getStoreCoordinates());
+                    storeList.get(i).setStoreDistanceWithUser(d);
+                }
                 openMapsActivity();
             }
         });
@@ -61,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         categoryTxt.setText(categorieArray[which]);
+                        category = categorieArray[which];
                         dialog.dismiss();
                     }
                 });
@@ -78,14 +88,15 @@ public class MainActivity extends AppCompatActivity {
         distanceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                distanceArray = new String[]{"100m", "200m", "400m", "800m", "1km", "5km"};
+                distanceArray = new String[]{"100", "200", "400", "800", "1000"};
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-                mBuilder.setTitle("Seciminizi Yapiniz");
+                mBuilder.setTitle("Seciminizi Yapiniz (m)");
                 mBuilder.setIcon(R.drawable.icon);
                 mBuilder.setSingleChoiceItems(distanceArray, -1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         distanceTxt.setText(distanceArray[which]);
+                        chosenDistance = Double.parseDouble(distanceArray[which]);
                         dialog.dismiss();
                     }
                 });
