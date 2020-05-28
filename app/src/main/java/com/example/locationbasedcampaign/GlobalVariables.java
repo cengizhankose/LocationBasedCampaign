@@ -2,6 +2,8 @@ package com.example.locationbasedcampaign;
 
 import android.app.Application;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.List;
 
