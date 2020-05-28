@@ -2,10 +2,14 @@ package com.example.locationbasedcampaign;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Store {
     private String storeName;
     private LatLng storeCoordinates;
     private String  storeCampaign;
+    private List<String> storeCategories = new ArrayList<String>();
     private double storeDistanceWithUser;
 
     public Store(String ad , LatLng koordinat , String kampanya)
@@ -13,6 +17,14 @@ public class Store {
         this.storeName = ad;
         this.storeCoordinates = koordinat;
         this.storeCampaign = kampanya;
+    }
+
+    public List<String> getStoreCategories() {
+        return storeCategories;
+    }
+
+    public void addStoreCategorie(String storeCategories) {
+        this.storeCategories.add(storeCategories);
     }
 
     public double getStoreDistanceWithUser() {
